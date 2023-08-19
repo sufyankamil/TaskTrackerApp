@@ -15,4 +15,5 @@ TaskTrackerApp empowers you to take control of your tasks, boost your productivi
 
 
 ![Simulator Screenshot - iPhone 14 - 2023-08-20 at 00 28 11](https://github.com/sufyankamil/TaskTrackerApp/assets/66327177/a3ae9c48-f244-40be-89e5-c63c92ceac2b)
+
 ![Simulator Screenshot - iPhone 14 - 2023-08-20 at 00 28 14](https://github.com/sufyankamil/TaskTrackerApp/assets/66327177/def4ffeb-59a0-4fee-b566-f7c9684ed74a)
