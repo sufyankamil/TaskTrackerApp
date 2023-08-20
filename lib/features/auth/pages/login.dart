@@ -10,6 +10,7 @@ import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_button.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
+import 'package:management/features/auth/pages/otp_pages.dart';
 
 import '../../../common/widgets/custom_textfield.dart';
 
@@ -60,6 +61,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
+  bool isPhoneNumberValid() {
+    return _controller.text.trim().length >= 9;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +77,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 padding: EdgeInsets.symmetric(horizontal: 30.w),
                 child: Lottie.asset(
                   animate: _isAnimationPlaying,
-                  'assets/images/phone_auth.json',
+                  'assets/images/otp.json',
                   width: 300,
                   height: 300,
                   fit: BoxFit.contain,
@@ -106,7 +111,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 )),
                             context: context,
                             onSelect: (code) {
-                              setState(() {});
+                              setState(() {
+                                country = code;
+                              });
                             });
                       },
                       child: ReusableText(
@@ -121,14 +128,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CustomButton(
-                  // onTap: () {
-
-                  // },
+                  // onTap: isPhoneNumberValid() // Check if phone number is valid
+                  //     ? () {
+                  //         Navigator.pushReplacement(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //             builder: (context) => const OTPPage(),
+                  //           ),
+                  //         );
+                  //       }
+                  //     : null,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OTPPage(),
+                      ),
+                    );
+                  },
                   width: AppConst.kWidth * 0.9,
                   height: AppConst.kHeight * 0.07,
                   color: AppConst.kBkDark,
                   color2: AppConst.kLight,
                   text: 'Send Code',
+                  // isEnabled: isPhoneNumberValid(),
                 ),
               ),
             ],

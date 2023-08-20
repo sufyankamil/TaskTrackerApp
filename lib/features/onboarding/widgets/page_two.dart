@@ -48,24 +48,24 @@ class _PageTwoState extends State<PageTwo> {
     return Container(
       height: AppConst.kHeight,
       width: AppConst.kWidth,
-      color: AppConst.kLight,
+      color: AppConst.kBkDark,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Lottie.asset(
             animate: _isAnimationPlaying,
-            'assets/images/todo_animation.json',
+            'assets/images/page2_animation.json',
             width: 300,
-            height: 250,
+            height: 300,
             fit: BoxFit.contain,
           ),
-          const HeightSpacer(height: 80),
+          const HeightSpacer(height: 100),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ReusableText(
                 text: 'Stay Organized & Productive',
-                style: appStyle(23, AppConst.kBkDark, FontWeight.w600),
+                style: appStyle(23, AppConst.kLight, FontWeight.w600),
               ),
               const HeightSpacer(height: 20),
               Padding(
@@ -79,12 +79,14 @@ class _PageTwoState extends State<PageTwo> {
               const HeightSpacer(height: 50),
               CustomButton(
                 onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const LoginPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()));
                 },
                 width: AppConst.kWidth * 0.9,
                 height: AppConst.kHeight * 0.06,
-                color: AppConst.kBkDark,
+                color: AppConst.kLight,
                 text: 'Login with Phone Number',
               )
             ],

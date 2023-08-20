@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:management/common/utils/constants.dart';
 import 'package:management/features/onboarding/pages/onboarding.dart';
+import 'package:management/features/todo/pages/homepage.dart';
 
 void main() {
   runApp(
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
               useMaterial3: true,
             ),
             themeMode: ThemeMode.dark,
-            home: const OnBoarding(),
+            home: const HomePage(),
           );
         });
   }
