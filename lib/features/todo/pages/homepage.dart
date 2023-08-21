@@ -11,6 +11,7 @@ import 'package:management/common/widgets/todo_tile.dart';
 import 'package:management/common/widgets/width_spacer.dart';
 
 import '../../../common/utils/constants.dart';
+import '../controller/expansion_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -214,13 +215,40 @@ class _HomePageState extends ConsumerState<HomePage>
               ),
               const HeightSpacer(height: 20),
               CustomExpansion(
-                text1: 'Project Name',
+                text1: '${DateTime.now().day.toString().padLeft(2, '0')}/'
+                    '${DateTime.now().month.toString().padLeft(2, '0')}/'
+                    '${DateTime.now().year}',
                 text2: 'Project Description',
-                children: [
-                  Container(
-                    height: 100,
-                    color: AppConst.kBkLight,
-                  )
+                onExpansionChanged: (bool expanded) {
+                  ref.read(expansionStateProvider.notifier).setStart(!expanded);
+                },
+                trailing: ref.watch(expansionStateProvider) == false
+                    ? Padding(
+                        padding: EdgeInsets.only(right: 12.0.w),
+                        child: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppConst.kLight,
+                        ),
+                      )
+                    : Padding(
+                        padding: EdgeInsets.only(right: 12.0.w),
+                        child: const Icon(
+                          Icons.keyboard_arrow_up,
+                          color: AppConst.kLight,
+                        ),
+                      ),
+                children: const [
+                  TodoTile(
+                    start: '10:00 AM',
+                    end: '11:00 AM',
+                    title: 'Meeting with client',
+                    description: 'Discuss about the project',
+                    color: AppConst.kRed,
+                    switcher: Switch(
+                      value: true,
+                      onChanged: null,
+                    ),
+                  ),
                 ],
               ),
               const HeightSpacer(height: 20),
@@ -228,11 +256,38 @@ class _HomePageState extends ConsumerState<HomePage>
                 text1:
                     '${DateTime.now().add(const Duration(days: 1)).day.toString().padLeft(2, '0')}/${DateTime.now().add(const Duration(days: 1)).month.toString().padLeft(2, '0')}/${DateTime.now().add(const Duration(days: 1)).year}',
                 text2: 'Project Description',
-                children: [
-                  Container(
-                    height: 100,
-                    color: AppConst.kBkLight,
-                  )
+                onExpansionChanged: (bool expanded) {
+                  ref
+                      .read(expansionState0Provider.notifier)
+                      .setStart(!expanded);
+                },
+                trailing: ref.watch(expansionState0Provider) == false
+                    ? Padding(
+                        padding: EdgeInsets.only(right: 12.0.w),
+                        child: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppConst.kLight,
+                        ),
+                      )
+                    : Padding(
+                        padding: EdgeInsets.only(right: 12.0.w),
+                        child: const Icon(
+                          Icons.keyboard_arrow_up,
+                          color: AppConst.kLight,
+                        ),
+                      ),
+                children: const [
+                  TodoTile(
+                    start: '10:00 AM',
+                    end: '11:00 AM',
+                    title: 'Meeting with client',
+                    description: 'Discuss about the project',
+                    color: AppConst.kRed,
+                    switcher: Switch(
+                      value: true,
+                      onChanged: null,
+                    ),
+                  ),
                 ],
               ),
             ],

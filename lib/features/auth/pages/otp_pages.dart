@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:management/common/utils/constants.dart';
-import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/height_spacer.dart';
-import 'package:management/common/widgets/reusable_text.dart';
 import 'package:pinput/pinput.dart';
 
 class OTPPage extends StatefulWidget {
