@@ -11,6 +11,7 @@ import 'package:management/common/widgets/todo_tile.dart';
 import 'package:management/common/widgets/width_spacer.dart';
 
 import '../../../common/utils/constants.dart';
+import '../../../common/widgets/custom_alert.dart';
 import '../controller/expansion_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -56,7 +57,13 @@ class _HomePageState extends ConsumerState<HomePage>
                         ),
                       ),
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          CustomCupertinoAlertDialog.show(
+                            context,
+                            'Coming Soon',
+                            'This feature is coming soon',
+                          );
+                        },
                         child: const Icon(
                           Icons.add,
                           color: AppConst.kBkDark,
