@@ -5,7 +5,7 @@ import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/reusable_text.dart';
 import 'package:management/common/widgets/width_spacer.dart';
 
-import 'height_spacer.dart';
+import '../../../common/widgets/height_spacer.dart';
 
 class TodoTile extends StatelessWidget {
   final Color? color;
@@ -43,7 +43,6 @@ class TodoTile extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            // height: 80.h,
             width: AppConst.kWidth,
             padding: EdgeInsets.all(8.h),
             decoration: BoxDecoration(

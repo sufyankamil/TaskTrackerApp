@@ -9,17 +9,17 @@ import 'package:management/common/widgets/custom_textfield.dart';
 import 'package:management/common/widgets/expasion_tile.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
-import 'package:management/common/widgets/todo_tile.dart';
 import 'package:management/common/widgets/width_spacer.dart';
-import 'package:management/features/todo/controller/todo/todo_provider.dart';
-import 'package:management/features/todo/pages/add.dart';
+import 'package:management/features/todo/widgets/todo_tile.dart';
 
 import '../../../common/utils/constants.dart';
-import '../../../common/widgets/custom_alert.dart';
 import '../controller/expansion_provider.dart';
+import '../controller/todo/todo_provider.dart';
+import '../pages/add.dart';
+import '../widgets/today_task.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
@@ -33,9 +33,8 @@ class _HomePageState extends ConsumerState<HomePage>
 
   String _getFormattedDate() {
     final now = DateTime.now();
-    final dayOfWeek = DateFormat('EEEE').format(now); // Get the day of the week
-    final formattedDate = DateFormat('d/MM/yyyy')
-        .format(now); // Get the date in the desired format
+    final dayOfWeek = DateFormat('EEEE').format(now);
+    final formattedDate = DateFormat('d/MM/yyyy').format(now);
     return '$dayOfWeek, $formattedDate';
   }
 
@@ -47,13 +46,11 @@ class _HomePageState extends ConsumerState<HomePage>
   void initState() {
     super.initState();
 
-    // Create an animation controller
     _controller = AnimationController(
-      duration: const Duration(seconds: 1), // Duration of the animation
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    // Start the animation when the widget is built
     if (!tasksCompleted) {
       _controller.forward();
     }
@@ -62,6 +59,15 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   Widget build(BuildContext context) {
     ref.watch(todoStateProvider.notifier).refresh();
+
+    List<Task> todayListData = ref.read(todoStateProvider);
+
+    String today = ref.read(todoStateProvider.notifier).getToday();
+
+    var todayList = todayListData
+        .where((element) =>
+            element.isCompleted == 0 && element.date!.contains(today))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -141,25 +147,25 @@ class _HomePageState extends ConsumerState<HomePage>
           child: ListView(
             children: [
               const HeightSpacer(height: 15),
-              // The sliding message
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 1), // Start position (fully hidden)
-                  end: const Offset(0, 0), // End position (fully visible)
-                ).animate(_controller),
-                child: Container(
-                  color: Colors.red, // Background color of the message
-                  padding: const EdgeInsets.all(16),
-                  child: const Text(
-                    "You don't have any tasks left for today. Come back tomorrow !",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+              if (todayList.isEmpty)
+                SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 1),
+                    end: const Offset(0, 0),
+                  ).animate(_controller),
+                  child: Container(
+                    color: Colors.red,
+                    padding: const EdgeInsets.all(16),
+                    child: const Text(
+                      "You don't have any tasks left for today. Come back tomorrow!",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const HeightSpacer(height: 15),
+              if (todayList.isEmpty) const HeightSpacer(height: 15),
               Text(
                 textAlign: TextAlign.center,
                 _getFormattedDate(),
@@ -257,26 +263,10 @@ class _HomePageState extends ConsumerState<HomePage>
                   ),
                   child: TabBarView(controller: tab, children: [
                     Container(
-                        color: AppConst.kBkLight,
-                        height: AppConst.kHeight * 0.3,
-                        child: const TodayTask()
-                        // child: Column(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     const Icon(
-                        //       FontAwesome.tasks,
-                        //       size: 50,
-                        //       color: AppConst.kLight,
-                        //     ),
-                        //     const HeightSpacer(height: 20),
-                        //     ReusableText(
-                        //       text: 'No Pending Tasks',
-                        //       style:
-                        //           appStyle(18, AppConst.kLight, FontWeight.bold),
-                        //     ),
-                        //   ],
-                        // ),
-                        ),
+                      color: AppConst.kBkLight,
+                      height: AppConst.kHeight * 0.3,
+                      child: const TodayTask(),
+                    ),
                     Container(
                       color: AppConst.kGreyLight,
                       height: AppConst.kHeight * 0.3,
@@ -329,7 +319,9 @@ class _HomePageState extends ConsumerState<HomePage>
               const HeightSpacer(height: 20),
               CustomExpansion(
                 text1:
-                    '${DateTime.now().add(const Duration(days: 1)).day.toString().padLeft(2, '0')}/${DateTime.now().add(const Duration(days: 1)).month.toString().padLeft(2, '0')}/${DateTime.now().add(const Duration(days: 1)).year}',
+                    '${DateTime.now().add(const Duration(days: 1)).day.toString().padLeft(2, '0')}/'
+                    '${DateTime.now().add(const Duration(days: 1)).month.toString().padLeft(2, '0')}/'
+                    '${DateTime.now().add(const Duration(days: 1)).year}',
                 text2: 'Project Description',
                 onExpansionChanged: (bool expanded) {
                   ref
@@ -374,61 +366,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   void dispose() {
-    _controller.dispose(); // Dispose the animation controller
+    _controller.dispose();
     super.dispose();
-  }
-}
-
-class TodayTask extends ConsumerWidget {
-  const TodayTask({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    List<Task> todayListData = ref.read(todoStateProvider);
-
-    String today = ref.read(todoStateProvider.notifier).getToday();
-
-    var todayList = todayListData
-        .where((element) =>
-            element.isCompleted == 0 && element.date!.contains(today))
-        .toList();
-
-    // print(todayList);
-
-    // print(todayListData[0].description);
-
-    if (todayList.isNotEmpty) {
-      return ListView.builder(
-        itemCount: todayList.length,
-        itemBuilder: (context, index) {
-          final task = todayList[index];
-          return TodoTile(
-            start: task.startTime!,
-            end: task.endTime!,
-            title: task.title!,
-            description: task.description!,
-            color: AppConst.kRed,
-          );
-        },
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            FontAwesome.tasks,
-            size: 50,
-            color: AppConst.kLight,
-          ),
-          const HeightSpacer(height: 20),
-          ReusableText(
-            text: 'No Pending Tasks',
-            style: appStyle(18, AppConst.kLight, FontWeight.bold),
-          ),
-        ],
-      );
-    }
   }
 }

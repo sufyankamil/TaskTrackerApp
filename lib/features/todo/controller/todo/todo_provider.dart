@@ -1,7 +1,13 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../common/helpers/db_helpers.dart';
+import '../../../../common/utils/constants.dart';
+import '../../../../common/widgets/loading_state_notifier.dart';
 
 part 'todo_provider.g.dart';
 
@@ -22,6 +28,19 @@ class TodoState extends _$TodoState {
     if (result != 0) {
       refresh();
     }
+  }
+
+  final loadingProvider = Provider<bool>((ref) => false);
+
+  final loadingNotifierProvider =
+      StateNotifierProvider<LoadingStateNotifier, bool>((ref) {
+    return LoadingStateNotifier();
+  });
+
+  Future<Color> getRandomColors() async {
+    Random random = Random();
+    int randomNumber = random.nextInt(colors.length);
+    return colors[randomNumber];
   }
 
   void updateTask(
@@ -58,7 +77,7 @@ class TodoState extends _$TodoState {
       String repeat) async {
     await DBHelper.updateTask(
         id, title, description, 1, date, startTime, endTime, remind, repeat);
-        refresh();
+    refresh();
   }
 
   String getToday() {

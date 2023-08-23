@@ -13,7 +13,6 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
 import 'package:management/features/todo/controller/dates/dates_provider.dart';
 import 'package:management/features/todo/controller/todo/todo_provider.dart';
 
-
 class AddTask extends ConsumerStatefulWidget {
   const AddTask({super.key});
 
@@ -63,6 +62,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
         ref.read(endTimeStateProvider.notifier).setEnd('');
         titleController.clear();
         descriptionController.clear();
+
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

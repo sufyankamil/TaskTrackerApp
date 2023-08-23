@@ -75,31 +75,38 @@ class DBHelper {
   }
 
   static Future<int> updateTask(
-      int id,
-      String title,
-      String description,
-      int isCompleted,
-      String date,
-      String startTime,
-      String endTime,
-      int remind,
-      String repeat) async {
-    final db = DBHelper._db;
-    final result = await db!.update(
-      'todo',
-      {
-        'title': title,
-        'description': description,
-        'isCompleted': isCompleted,
-        'date': date,
-        'startTime': startTime,
-        'endTime': endTime,
-        'remind': remind,
-        'repeat': repeat,
-      },
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    int id,
+    String title,
+    String description,
+    int isCompleted,
+    String date,
+    String startTime,
+    String endTime,
+    int remind,
+    String repeat,
+  ) async {
+    final database = DBHelper.db();
+    final data = {
+      'id': id,
+      'title': title,
+      'description': description,
+      'isCompleted': isCompleted,
+      'date': date,
+      'startTime': startTime,
+      'endTime': endTime,
+      'remind': remind,
+      'repeat': repeat,
+    };
+
+    final result = database.then((value) async {
+      final result = await value.update(
+        'todo',
+        data,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      return result;
+    });
     return result;
   }
 
@@ -130,11 +137,11 @@ class DBHelper {
   }
 
   static Future<int> createUser(int isVerified) async {
-    final db = DBHelper._db;
-    final result = await db!.insert(
+    final db = await DBHelper.db();
+    final result = await db.insert(
       'user',
       {
-        'id': 0,
+        'id': 1,
         'isVerified': isVerified,
       },
       conflictAlgorithm: sql.ConflictAlgorithm.replace,
