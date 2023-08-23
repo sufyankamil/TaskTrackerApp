@@ -14,7 +14,7 @@ class TodoState extends _$TodoState {
 
   void refresh() async {
     final data = await DBHelper.getItems();
-    state = data;
+    state = data.map((e) => Task.fromJson(e)).toList();
   }
 
   void addTask(Task task) async {
@@ -36,6 +36,7 @@ class TodoState extends _$TodoState {
       String repeat) async {
     await DBHelper.updateTask(id, title, description, isCompleted, date,
         startTime, endTime, remind, repeat);
+    refresh();
   }
 
   void deleteTask(int id) async {
@@ -45,43 +46,38 @@ class TodoState extends _$TodoState {
     }
   }
 
-  void markAsCompleted(int id) async {
-    final task = await DBHelper.getItem(id);
-    task.isCompleted = 1;
-    final result = await DBHelper.updateTask(
-        task.id!,
-        task.title!,
-        task.description!,
-        1,
-        task.date!,
-        task.startTime!,
-        task.endTime!,
-        task.remind!,
-        task.repeat!);
-    if (result != 0) {
-      refresh();
-    }
+  void markAsCompleted(
+      int id,
+      String title,
+      String description,
+      int isCompleted,
+      String date,
+      String startTime,
+      String endTime,
+      int remind,
+      String repeat) async {
+    await DBHelper.updateTask(
+        id, title, description, 1, date, startTime, endTime, remind, repeat);
+        refresh();
   }
 
-  String getToday(){
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    return today.toString();
+  String getToday() {
+    DateTime today = DateTime.now();
+    return today.toString().substring(0, 10);
   }
 
-  String getTomorrow(){
-    final now = DateTime.now();
-    final tomorrow = DateTime(now.year, now.month, now.day + 1);
-    return tomorrow.toString();
+  String getTomorrow() {
+    DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+    return tomorrow.toString().substring(0, 10);
   }
 
-  String getYesterday(){
+  String getYesterday() {
     final now = DateTime.now();
     final yesterday = DateTime(now.year, now.month, now.day - 1);
     return yesterday.toString();
   }
 
-  List<String> last30Days(){
+  List<String> last30Days() {
     final now = DateTime.now();
     DateTime oneMonth = now.subtract(const Duration(days: 30));
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:management/common/models/task_model.dart';
 import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_textfield.dart';
 import 'package:management/common/widgets/expasion_tile.dart';
@@ -9,6 +11,8 @@ import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
 import 'package:management/common/widgets/todo_tile.dart';
 import 'package:management/common/widgets/width_spacer.dart';
+import 'package:management/features/todo/controller/todo/todo_provider.dart';
+import 'package:management/features/todo/pages/add.dart';
 
 import '../../../common/utils/constants.dart';
 import '../../../common/widgets/custom_alert.dart';
@@ -27,74 +31,107 @@ class _HomePageState extends ConsumerState<HomePage>
 
   late final TabController tab = TabController(length: 3, vsync: this);
 
+  String _getFormattedDate() {
+    final now = DateTime.now();
+    final dayOfWeek = DateFormat('EEEE').format(now); // Get the day of the week
+    final formattedDate = DateFormat('d/MM/yyyy')
+        .format(now); // Get the date in the desired format
+    return '$dayOfWeek, $formattedDate';
+  }
+
+  bool tasksCompleted = false;
+
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Create an animation controller
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // Duration of the animation
+      vsync: this,
+    );
+
+    // Start the animation when the widget is built
+    if (!tasksCompleted) {
+      _controller.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    ref.watch(todoStateProvider.notifier).refresh();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(85),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ReusableText(
-                      text: 'Dashboard',
-                      style: appStyle(18, AppConst.kLight, FontWeight.bold),
-                    ),
-                    Container(
-                      width: 25.w,
-                      height: 25.h,
-                      decoration: const BoxDecoration(
-                        color: AppConst.kLight,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(9),
-                        ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ReusableText(
+                        text: 'Dashboard',
+                        style: appStyle(18, AppConst.kLight, FontWeight.bold),
                       ),
-                      child: GestureDetector(
-                        onTap: () {
-                          CustomCupertinoAlertDialog.show(
-                            context,
-                            'Coming Soon',
-                            'This feature is coming soon',
-                          );
-                        },
-                        child: const Icon(
-                          Icons.add,
-                          color: AppConst.kBkDark,
+                      Container(
+                        width: 25.w,
+                        height: 25.h,
+                        decoration: const BoxDecoration(
+                          color: AppConst.kLight,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(9),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const HeightSpacer(height: 20),
-              CustomTextField(
-                keyboardType: TextInputType.text,
-                hintText: 'Search',
-                textEditingController: search,
-                prefixIcon: Container(
-                  padding: const EdgeInsets.all(14),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: const Icon(
-                      AntDesign.search1,
-                      color: AppConst.kGreyLight,
-                    ),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddTask(),
+                              ),
+                            );
+                          },
+                          child: const Icon(
+                            Icons.add,
+                            color: AppConst.kBkDark,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                suffixIcon: const Icon(
-                  FontAwesome.sliders,
-                  color: AppConst.kGreyLight,
+                const HeightSpacer(height: 20),
+                CustomTextField(
+                  keyboardType: TextInputType.text,
+                  hintText: 'Search',
+                  textEditingController: search,
+                  prefixIcon: Container(
+                    padding: const EdgeInsets.all(14),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: const Icon(
+                        AntDesign.search1,
+                        color: AppConst.kGreyLight,
+                      ),
+                    ),
+                  ),
+                  suffixIcon: const Icon(
+                    FontAwesome.sliders,
+                    color: AppConst.kGreyLight,
+                  ),
                 ),
-              ),
-              const HeightSpacer(height: 15),
-            ],
+                const HeightSpacer(height: 15),
+              ],
+            ),
           ),
         ),
       ),
@@ -103,7 +140,36 @@ class _HomePageState extends ConsumerState<HomePage>
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: ListView(
             children: [
-              const HeightSpacer(height: 25),
+              const HeightSpacer(height: 15),
+              // The sliding message
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 1), // Start position (fully hidden)
+                  end: const Offset(0, 0), // End position (fully visible)
+                ).animate(_controller),
+                child: Container(
+                  color: Colors.red, // Background color of the message
+                  padding: const EdgeInsets.all(16),
+                  child: const Text(
+                    "You don't have any tasks left for today. Come back tomorrow !",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const HeightSpacer(height: 15),
+              Text(
+                textAlign: TextAlign.center,
+                _getFormattedDate(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: AppConst.kLight,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const HeightSpacer(height: 20),
               Row(
                 children: [
                   const Icon(
@@ -191,24 +257,26 @@ class _HomePageState extends ConsumerState<HomePage>
                   ),
                   child: TabBarView(controller: tab, children: [
                     Container(
-                      color: AppConst.kBkLight,
-                      height: AppConst.kHeight * 0.3,
-                      child: ListView(
-                        children: const [
-                          TodoTile(
-                            start: '10:00 AM',
-                            end: '11:00 AM',
-                            title: 'Meeting with client',
-                            description: 'Discuss about the project',
-                            color: AppConst.kRed,
-                            switcher: Switch(
-                              value: true,
-                              onChanged: null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                        color: AppConst.kBkLight,
+                        height: AppConst.kHeight * 0.3,
+                        child: const TodayTask()
+                        // child: Column(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     const Icon(
+                        //       FontAwesome.tasks,
+                        //       size: 50,
+                        //       color: AppConst.kLight,
+                        //     ),
+                        //     const HeightSpacer(height: 20),
+                        //     ReusableText(
+                        //       text: 'No Pending Tasks',
+                        //       style:
+                        //           appStyle(18, AppConst.kLight, FontWeight.bold),
+                        //     ),
+                        //   ],
+                        // ),
+                        ),
                     Container(
                       color: AppConst.kGreyLight,
                       height: AppConst.kHeight * 0.3,
@@ -302,5 +370,65 @@ class _HomePageState extends ConsumerState<HomePage>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Dispose the animation controller
+    super.dispose();
+  }
+}
+
+class TodayTask extends ConsumerWidget {
+  const TodayTask({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Task> todayListData = ref.read(todoStateProvider);
+
+    String today = ref.read(todoStateProvider.notifier).getToday();
+
+    var todayList = todayListData
+        .where((element) =>
+            element.isCompleted == 0 && element.date!.contains(today))
+        .toList();
+
+    // print(todayList);
+
+    // print(todayListData[0].description);
+
+    if (todayList.isNotEmpty) {
+      return ListView.builder(
+        itemCount: todayList.length,
+        itemBuilder: (context, index) {
+          final task = todayList[index];
+          return TodoTile(
+            start: task.startTime!,
+            end: task.endTime!,
+            title: task.title!,
+            description: task.description!,
+            color: AppConst.kRed,
+          );
+        },
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            FontAwesome.tasks,
+            size: 50,
+            color: AppConst.kLight,
+          ),
+          const HeightSpacer(height: 20),
+          ReusableText(
+            text: 'No Pending Tasks',
+            style: appStyle(18, AppConst.kLight, FontWeight.bold),
+          ),
+        ],
+      );
+    }
   }
 }
