@@ -49,7 +49,8 @@ class TodoTile extends StatelessWidget {
               borderRadius: BorderRadius.all(
                 Radius.circular(10.r),
               ),
-              color: Colors.green,
+              // o
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

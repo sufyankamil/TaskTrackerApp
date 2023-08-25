@@ -10,8 +10,8 @@ import 'package:management/features/todo/widgets/todo_tile.dart';
 import '../../../common/models/task_model.dart';
 import '../../../common/widgets/reusable_text.dart';
 
-class TodayTask extends ConsumerWidget {
-  const TodayTask({
+class CompletedTask extends ConsumerWidget {
+  const CompletedTask({
     super.key,
   });
 
@@ -19,18 +19,23 @@ class TodayTask extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     List<Task> todayListData = ref.read(todoStateProvider);
 
-    String today = ref.read(todoStateProvider.notifier).getToday();
+    List lastMonth = ref.read(todoStateProvider.notifier).last30Days();
 
-    var todayList = todayListData
-        .where((element) =>
-            element.isCompleted == 0 && element.date!.contains(today))
+    var completedList = todayListData
+        .where(
+          (element) =>
+              element.isCompleted == 1 ||
+              lastMonth.contains(
+                element.date!.substring(0, 10),
+              ),
+        )
         .toList();
 
     if (todayListData.isNotEmpty) {
       return ListView.builder(
-        itemCount: todayList.length,
+        itemCount: completedList.length,
         itemBuilder: (context, index) {
-          final task = todayList[index];
+          final task = completedList[index];
           bool isCompleted =
               ref.watch(todoStateProvider.notifier).getStatus(task);
 
@@ -47,49 +52,17 @@ class TodayTask extends ConsumerWidget {
               } else {
                 // Data is ready, build TodoTile with the retrieved color.
                 return TodoTile(
-                    start: task.startTime!,
-                    end: task.endTime!,
-                    title: task.title!,
-                    description: task.description!,
-                    color: snapshot.data, // Use the retrieved color
-                    switcher: Switch(
-                      value: isCompleted,
-                      onChanged: (value) {
-                        if (value == true) {
-                          ref.read(todoStateProvider.notifier).markAsCompleted(
-                              task.id!,
-                              task.title!,
-                              task.description!,
-                              1,
-                              task.date!,
-                              task.startTime!,
-                              task.endTime!,
-                              0,
-                              'yes');
-                        } else {
-                          ref.read(todoStateProvider.notifier).markAsCompleted(
-                              task.id!,
-                              task.title!,
-                              task.description!,
-                              0,
-                              task.date!,
-                              task.startTime!,
-                              task.endTime!,
-                              0,
-                              'yes');
-                        }
-                      },
-                    ),
-                    delete: () {
-                      ref.read(todoStateProvider.notifier).deleteTask(task.id!);
-                    },
-                    editWidget: GestureDetector(
-                      onTap: () {},
-                      child: const Icon(
-                        FontAwesome.edit,
-                        color: AppConst.kLight,
-                      ),
-                    ));
+                  start: task.startTime!,
+                  end: task.endTime!,
+                  title: task.title!,
+                  description: task.description!,
+                  color: snapshot.data, // Use the retrieved color
+                  switcher: const Icon(AntDesign.checkcircle),
+                  delete: () {
+                    ref.read(todoStateProvider.notifier).deleteTask(task.id!);
+                  },
+                  editWidget: const SizedBox.shrink()
+                );
               }
             },
           );

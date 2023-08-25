@@ -10,7 +10,9 @@ import 'package:management/common/widgets/expasion_tile.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
 import 'package:management/common/widgets/width_spacer.dart';
+import 'package:management/features/todo/widgets/dat_after_tomorrow.dart';
 import 'package:management/features/todo/widgets/todo_tile.dart';
+import 'package:management/features/todo/widgets/tomorrow_list.dart';
 
 import '../../../common/utils/constants.dart';
 import '../controller/expansion_provider.dart';
@@ -279,84 +281,9 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
               ),
               const HeightSpacer(height: 20),
-              CustomExpansion(
-                text1: '${DateTime.now().day.toString().padLeft(2, '0')}/'
-                    '${DateTime.now().month.toString().padLeft(2, '0')}/'
-                    '${DateTime.now().year}',
-                text2: 'Project Description',
-                onExpansionChanged: (bool expanded) {
-                  ref.read(expansionStateProvider.notifier).setStart(!expanded);
-                },
-                trailing: ref.watch(expansionStateProvider) == false
-                    ? Padding(
-                        padding: EdgeInsets.only(right: 12.0.w),
-                        child: const Icon(
-                          Icons.keyboard_arrow_down,
-                          color: AppConst.kLight,
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(right: 12.0.w),
-                        child: const Icon(
-                          Icons.keyboard_arrow_up,
-                          color: AppConst.kLight,
-                        ),
-                      ),
-                children: const [
-                  TodoTile(
-                    start: '10:00 AM',
-                    end: '11:00 AM',
-                    title: 'Meeting with client',
-                    description: 'Discuss about the project',
-                    color: AppConst.kRed,
-                    switcher: Switch(
-                      value: true,
-                      onChanged: null,
-                    ),
-                  ),
-                ],
-              ),
+              const TomorrowList(),
               const HeightSpacer(height: 20),
-              CustomExpansion(
-                text1:
-                    '${DateTime.now().add(const Duration(days: 1)).day.toString().padLeft(2, '0')}/'
-                    '${DateTime.now().add(const Duration(days: 1)).month.toString().padLeft(2, '0')}/'
-                    '${DateTime.now().add(const Duration(days: 1)).year}',
-                text2: 'Project Description',
-                onExpansionChanged: (bool expanded) {
-                  ref
-                      .read(expansionState0Provider.notifier)
-                      .setStart(!expanded);
-                },
-                trailing: ref.watch(expansionState0Provider) == false
-                    ? Padding(
-                        padding: EdgeInsets.only(right: 12.0.w),
-                        child: const Icon(
-                          Icons.keyboard_arrow_down,
-                          color: AppConst.kLight,
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(right: 12.0.w),
-                        child: const Icon(
-                          Icons.keyboard_arrow_up,
-                          color: AppConst.kLight,
-                        ),
-                      ),
-                children: const [
-                  TodoTile(
-                    start: '10:00 AM',
-                    end: '11:00 AM',
-                    title: 'Meeting with client',
-                    description: 'Discuss about the project',
-                    color: AppConst.kRed,
-                    switcher: Switch(
-                      value: true,
-                      onChanged: null,
-                    ),
-                  ),
-                ],
-              ),
+              const DayAfterTomorrowList(),
             ],
           ),
         ),

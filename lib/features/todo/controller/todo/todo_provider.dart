@@ -90,6 +90,11 @@ class TodoState extends _$TodoState {
     return tomorrow.toString().substring(0, 10);
   }
 
+  String getDatAfterTomorrow() {
+    DateTime tomorrow = DateTime.now().add(const Duration(days: 2));
+    return tomorrow.toString().substring(0, 10);
+  }
+
   String getYesterday() {
     final now = DateTime.now();
     final yesterday = DateTime(now.year, now.month, now.day - 1);
