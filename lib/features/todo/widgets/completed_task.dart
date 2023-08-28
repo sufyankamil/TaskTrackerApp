@@ -92,8 +92,6 @@ class CompletedTask extends ConsumerWidget {
         itemCount: completedList.length,
         itemBuilder: (context, index) {
           final task = completedList[index];
-          bool isCompleted =
-              ref.watch(todoStateProvider.notifier).getStatus(task);
 
           return FutureBuilder<Color>(
             future: ref.read(todoStateProvider.notifier).getRandomColors(),

@@ -2,19 +2,36 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:management/common/utils/constants.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:pinput/pinput.dart';
 
-class OTPPage extends StatefulWidget {
-  const OTPPage({super.key});
+import '../controller/auth_controller.dart';
+
+// class OTPPage extends ConsumerWidget {
+//   final String verificationId;
+
+//   final String phone;
+
+//   const OTPPage({Key? key, required this.verificationId, required this.phone})
+//       : super(key: key);
+// }
+
+class OTPPage extends ConsumerStatefulWidget {
+  final String verificationId;
+
+  final String phone;
+
+  const OTPPage({super.key, required this.verificationId, required this.phone});
+  
 
   @override
-  State<OTPPage> createState() => _OTPPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _OTPPageState();
 }
 
-class _OTPPageState extends State<OTPPage> {
+class _OTPPageState extends ConsumerState<OTPPage> {
   bool _isAnimationPlaying = true;
   late Timer _animationTimer;
 
@@ -31,6 +48,15 @@ class _OTPPageState extends State<OTPPage> {
       });
       _animationTimer.cancel();
     });
+  }
+
+  void verifyOTP(BuildContext context, WidgetRef ref, String smsCode) {
+    ref.read(authControllerProvider).verifyOTP(
+          verificationId: widget.verificationId,
+          smsCode: smsCode,
+          mounted: true,
+          context: context,
+        );
   }
 
   @override
@@ -78,10 +104,14 @@ class _OTPPageState extends State<OTPPage> {
                 length: 6,
                 showCursor: true,
                 onCompleted: (value) {
-                  if (value.length == 6) {}
+                  if (value.length == 6) {
+                    return verifyOTP(context, ref, value);
+                  }
                 },
                 onSubmitted: (value) {
-                  if (value.length == 6) {}
+                  if (value.length == 6) {
+                    return verifyOTP(context, ref, value);
+                  }
                 },
               )
             ],

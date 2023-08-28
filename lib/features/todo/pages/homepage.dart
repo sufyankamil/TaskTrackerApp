@@ -84,7 +84,6 @@ class _HomePageState extends ConsumerState<HomePage>
 
     List<Task> filteredTasks = [];
 
-    final bool hasSearchResults = filteredTasks.isNotEmpty;
 
 // Function to filter tasks by task name
     void searchTasks(String query) {

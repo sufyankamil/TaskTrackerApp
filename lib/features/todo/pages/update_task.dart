@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:management/common/models/task_model.dart';
 import 'package:management/common/utils/constants.dart';
 import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_button.dart';
@@ -32,12 +31,12 @@ class _UpdateTaskState extends ConsumerState<UpdateTask> {
     text: descriptions,
   );
 
-  // @override
-  // void dispose() {
-  //   titleController.dispose();
-  //   descriptionController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +47,6 @@ class _UpdateTaskState extends ConsumerState<UpdateTask> {
     var endTime = ref.watch(endTimeStateProvider);
 
     DateTime? lastUpdateTime;
-
-    print(lastUpdateTime);
 
     submit(BuildContext context) {
       if (titleController.text.isNotEmpty &&
@@ -184,45 +181,6 @@ class _UpdateTaskState extends ConsumerState<UpdateTask> {
                   const HeightSpacer(height: 20),
                 ],
               ),
-              // const HeightSpacer(height: 20),
-              // CustomButton(
-              //     onTap: () {
-              //       picker.DatePicker.showDatePicker(context,
-              //           showTitleActions: true,
-              //           minTime: DateTime(2023, 8, 1),
-              //           maxTime: DateTime(2025, 12, 31),
-              //           theme: const picker.DatePickerTheme(
-              //               headerColor: AppConst.kGreyDk,
-              //               backgroundColor: Colors.white,
-              //               itemStyle: TextStyle(
-              //                   color: AppConst.kBkDark,
-              //                   fontWeight: FontWeight.bold,
-              //                   fontSize: 18),
-              //               doneStyle:
-              //                   TextStyle(color: Colors.white, fontSize: 16)),
-              //           onChanged: (date) {
-              //         if (kDebugMode) {
-              //           print(
-              //               'change $date in time zone ${date.timeZoneOffset.inHours}');
-              //         }
-              //       }, onConfirm: (date) {
-              //         ref
-              //             .read(dateStateProvider.notifier)
-              //             .setDate(date.toString());
-              //         if (kDebugMode) {
-              //           print('confirm $date');
-              //         }
-              //       },
-              //           currentTime: DateTime.now(),
-              //           locale: picker.LocaleType.en);
-              //     },
-              //     width: AppConst.kWidth,
-              //     height: 52.h,
-              //     color: AppConst.kLight,
-              //     color2: AppConst.kBlueLight,
-              //     text: scheduleDate == ''
-              //         ? 'Set Date'
-              //         : scheduleDate.substring(0, 10)),
               const HeightSpacer(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

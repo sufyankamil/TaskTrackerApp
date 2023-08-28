@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,9 @@ import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
 import 'package:management/features/auth/pages/otp_pages.dart';
 
+import '../../../common/widgets/custom_alert.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../controller/auth_controller.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -29,16 +32,57 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController _controller = TextEditingController();
 
   Country country = Country(
-      phoneCode: '91',
-      countryCode: 'IND',
-      e164Sc: 0,
-      geographic: true,
-      level: 1,
-      name: 'INDIA',
-      example: "India",
-      displayName: 'INDIA',
-      displayNameNoCountryCode: '+91',
-      e164Key: '');
+    phoneCode: '91',
+    countryCode: 'IND',
+    e164Sc: 0,
+    geographic: true,
+    level: 1,
+    name: 'India',
+    example: "India",
+    displayName: 'India',
+    displayNameNoCountryCode: 'IND',
+    e164Key: '',
+  );
+
+  sendCodeToUser() {
+    if (_controller.text.isEmpty) {
+      if (Platform.isIOS) {
+        CustomCupertinoAlertDialog.show(
+          context,
+          'Error',
+          'Please enter your phone number',
+        );
+      } else {
+        CustomCupertinoAlertDialog.showAlertDialog(
+          context: context,
+          title: 'Error',
+          content: 'Please enter your phone number',
+        );
+      }
+    } else if (_controller.text.length < 8) {
+      if (Platform.isIOS) {
+        CustomCupertinoAlertDialog.show(
+          context,
+          'Error',
+          'Please enter a valid phone number',
+        );
+      } else {
+        CustomCupertinoAlertDialog.showAlertDialog(
+          context: context,
+          title: 'Error',
+          content: 'Please enter a valid phone number',
+        );
+      }
+    } else {
+      print('${country.phoneCode}${_controller.text.trim()}');
+      final authController = ref.read(authControllerProvider);
+      authController.sendOTP(
+        phone: '+${country.phoneCode}${_controller.text.trim()}',
+        context: context,
+      );
+    }
+    // if (_controller.text.trim().length >= 9) {}
+  }
 
   @override
   void initState() {
@@ -139,12 +183,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   //       }
                   //     : null,
                   onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OTPPage(),
-                      ),
-                    );
+                    sendCodeToUser();
                   },
                   width: AppConst.kWidth * 0.9,
                   height: AppConst.kHeight * 0.07,

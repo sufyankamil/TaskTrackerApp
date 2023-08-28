@@ -159,10 +159,10 @@ class DBHelper {
     return result;
   }
 
-  static Future<List<Map<String, dynamic>>> getUser() async {
+  static Future<List<Map<String, dynamic>>> getUsers() async {
     final db = DBHelper.db();
     return db.then((value) async {
-      final result = await value.query('user');
+      final result = await value.query('user', orderBy: 'id');
       return result;
     });
   }

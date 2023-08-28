@@ -48,12 +48,6 @@ class TodoState extends _$TodoState {
     return LoadingStateNotifier();
   });
 
-  // Future<Color> getRandomColors() async {
-  //   Random random = Random();
-  //   int randomNumber = random.nextInt(colors.length);
-  //   return colors[randomNumber];
-  // }
-
   Future<Color> getRandomColors() async {
     if (colors.isEmpty) {
       throw Exception('No colors available');

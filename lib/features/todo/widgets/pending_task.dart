@@ -21,15 +21,6 @@ class PendingTask extends ConsumerWidget {
 
     List lastMonth = ref.read(todoStateProvider.notifier).last30Days();
 
-    var completedList = todayListData
-        .where(
-          (element) =>
-              element.isCompleted == 1 ||
-              lastMonth.contains(
-                element.date!.substring(0, 10),
-              ),
-        )
-        .toList();
 
     var pendingList = todayListData
         .where(

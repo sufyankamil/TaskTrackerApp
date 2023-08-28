@@ -88,6 +88,7 @@ class TodayTask extends ConsumerWidget {
         final shouldReload = ref.watch(shouldReloadProvider.notifier);
 
         // Check if a reload is needed
+        // ignore: invalid_use_of_protected_member
         if (shouldReload.state == true) {
           // Toggle the reload state to false to avoid triggering reload repeatedly
           shouldReload.toggleReload();
