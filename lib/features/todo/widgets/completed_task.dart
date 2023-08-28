@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,6 +34,59 @@ class CompletedTask extends ConsumerWidget {
         )
         .toList();
 
+    confirmDelete(Task task) {
+      if (Platform.isIOS) {
+        showDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Delete Task'),
+            content: const Text('Are you sure you want to delete this task?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  ref.read(todoStateProvider.notifier).deleteTask(task.id!);
+                  Navigator.pop(context);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ref.read(todoStateProvider.notifier).refresh();
+                  });
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete Task'),
+            content: const Text('Are you sure you want to delete this task?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  ref.read(todoStateProvider.notifier).deleteTask(task.id!);
+                  Navigator.pop(context);
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
     if (todayListData.isNotEmpty) {
       return ListView.builder(
         itemCount: completedList.length,
@@ -52,17 +108,17 @@ class CompletedTask extends ConsumerWidget {
               } else {
                 // Data is ready, build TodoTile with the retrieved color.
                 return TodoTile(
-                  start: task.startTime!,
-                  end: task.endTime!,
-                  title: task.title!,
-                  description: task.description!,
-                  color: snapshot.data, // Use the retrieved color
-                  switcher: const Icon(AntDesign.checkcircle),
-                  delete: () {
-                    ref.read(todoStateProvider.notifier).deleteTask(task.id!);
-                  },
-                  editWidget: const SizedBox.shrink()
-                );
+                    start: task.startTime!,
+                    end: task.endTime!,
+                    title: task.title!,
+                    description: task.description!,
+                    color: snapshot.data, // Use the retrieved color
+                    switcher: const Icon(AntDesign.checkcircle,
+                        color: AppConst.kGreen),
+                    delete: () {
+                      confirmDelete(task);
+                    },
+                    editWidget: const SizedBox.shrink());
               }
             },
           );

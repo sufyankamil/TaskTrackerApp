@@ -9,6 +9,7 @@ class Task {
     String? title;
     String? description;
     int? isCompleted;
+    int? isPending;
     String? date;
     String? startTime;
     String? endTime;
@@ -20,6 +21,7 @@ class Task {
         this.title,
         this.description,
         this.isCompleted,
+        this.isPending,
         this.date,
         this.startTime,
         this.endTime,
@@ -32,6 +34,7 @@ class Task {
         title: json["title"],
         description: json["description"],
         isCompleted: json["isCompleted"],
+        isPending: json["isPending"],
         date: json["date"],
         startTime: json["startTime"],
         endTime: json["endTime"],
@@ -44,6 +47,7 @@ class Task {
         "title": title,
         "description": description,
         "isCompleted": isCompleted,
+        "isPending": isPending,
         "date": date,
         "startTime": startTime,
         "endTime": endTime,

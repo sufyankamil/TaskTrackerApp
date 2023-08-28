@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:management/common/utils/constants.dart';
 import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/reusable_text.dart';
@@ -131,8 +132,8 @@ class TodoTile extends StatelessWidget {
                                     GestureDetector(
                                       onTap: delete,
                                       child: const Icon(
-                                        Icons.delete,
-                                        color: AppConst.kGreyDk,
+                                        Icons.delete_forever,
+                                        color: AppConst.kRed,
                                       ),
                                     ),
                                   ],

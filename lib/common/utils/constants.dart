@@ -32,3 +32,9 @@ List<dynamic> colors = [
   const Color(0xFFFF7F00),
   const Color(0xFFFFFF00)
 ];
+
+String titles = "";
+String descriptions = "";
+String startTimes = "";
+String endTimes = "";
+String dates = "";

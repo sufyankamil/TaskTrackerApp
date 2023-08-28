@@ -6,18 +6,17 @@ import 'package:intl/intl.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_textfield.dart';
-import 'package:management/common/widgets/expasion_tile.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
 import 'package:management/common/widgets/width_spacer.dart';
+import 'package:management/features/todo/widgets/completed_task.dart';
 import 'package:management/features/todo/widgets/dat_after_tomorrow.dart';
-import 'package:management/features/todo/widgets/todo_tile.dart';
 import 'package:management/features/todo/widgets/tomorrow_list.dart';
 
 import '../../../common/utils/constants.dart';
-import '../controller/expansion_provider.dart';
 import '../controller/todo/todo_provider.dart';
 import '../pages/add.dart';
+import '../widgets/pending_task.dart';
 import '../widgets/today_task.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -56,6 +55,18 @@ class _HomePageState extends ConsumerState<HomePage>
     if (!tasksCompleted) {
       _controller.forward();
     }
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          tasksCompleted = true;
+        });
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(todoStateProvider.notifier).refresh();
+    });
   }
 
   @override
@@ -71,15 +82,32 @@ class _HomePageState extends ConsumerState<HomePage>
             element.isCompleted == 0 && element.date!.contains(today))
         .toList();
 
+    List<Task> filteredTasks = [];
+
+    final bool hasSearchResults = filteredTasks.isNotEmpty;
+
+// Function to filter tasks by task name
+    void searchTasks(String query) {
+      setState(() {
+        filteredTasks = todayListData.where((task) {
+          final taskName = task.title!.toLowerCase();
+          final lowerQuery = query.toLowerCase();
+          return task.isCompleted == 0 &&
+              task.date!.contains(today) &&
+              taskName.contains(lowerQuery);
+        }).toList();
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(85),
+          preferredSize: Size.fromHeight(85.h),
           child: SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Row(
@@ -122,10 +150,15 @@ class _HomePageState extends ConsumerState<HomePage>
                   keyboardType: TextInputType.text,
                   hintText: 'Search',
                   textEditingController: search,
+                  onChanged: (value) {
+                    searchTasks(value);
+                  },
                   prefixIcon: Container(
                     padding: const EdgeInsets.all(14),
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        searchTasks(search.text);
+                      },
                       child: const Icon(
                         AntDesign.search1,
                         color: AppConst.kGreyLight,
@@ -149,25 +182,6 @@ class _HomePageState extends ConsumerState<HomePage>
           child: ListView(
             children: [
               const HeightSpacer(height: 15),
-              if (todayList.isEmpty)
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 1),
-                    end: const Offset(0, 0),
-                  ).animate(_controller),
-                  child: Container(
-                    color: Colors.red,
-                    padding: const EdgeInsets.all(16),
-                    child: const Text(
-                      "You don't have any tasks left for today. Come back tomorrow!",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              if (todayList.isEmpty) const HeightSpacer(height: 15),
               Text(
                 textAlign: TextAlign.center,
                 _getFormattedDate(),
@@ -224,7 +238,7 @@ class _HomePageState extends ConsumerState<HomePage>
                           width: AppConst.kWidth * 0.5,
                           child: ReusableText(
                             textAlign: TextAlign.center,
-                            text: 'Pending',
+                            text: 'All Tasks',
                             style: appStyle(16, AppConst.kRed, FontWeight.bold),
                           ),
                         ),
@@ -267,15 +281,17 @@ class _HomePageState extends ConsumerState<HomePage>
                     Container(
                       color: AppConst.kBkLight,
                       height: AppConst.kHeight * 0.3,
-                      child: const TodayTask(),
+                      child: TodayTask(taskList: filteredTasks),
                     ),
                     Container(
                       color: AppConst.kGreyLight,
                       height: AppConst.kHeight * 0.3,
+                      child: const PendingTask(),
                     ),
                     Container(
-                      color: AppConst.kGreen,
+                      color: AppConst.kGreyBk,
                       height: AppConst.kHeight * 0.3,
+                      child: const CompletedTask(),
                     ),
                   ]),
                 ),
@@ -294,6 +310,8 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void dispose() {
     _controller.dispose();
+    tab.dispose();
+    search.dispose();
     super.dispose();
   }
 }

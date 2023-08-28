@@ -7,6 +7,7 @@ import 'package:management/features/todo/controller/todo/todo_provider.dart';
 import '../../../common/utils/constants.dart';
 import '../../../common/widgets/expasion_tile.dart';
 import '../controller/expansion_provider.dart';
+import '../pages/update_task.dart';
 import 'todo_tile.dart';
 
 class DayAfterTomorrowList extends ConsumerWidget {
@@ -83,6 +84,7 @@ class DayAfterTomorrowList extends ConsumerWidget {
                       todo.title!,
                       todo.description!,
                       1,
+                      0,
                       todo.date!,
                       todo.startTime!,
                       todo.endTime!,
@@ -95,7 +97,19 @@ class DayAfterTomorrowList extends ConsumerWidget {
               ref.read(todoStateProvider.notifier).deleteTask(todo.id!);
             },
             editWidget: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                titles = todo.title.toString();
+                descriptions = todo.description.toString();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdateTask(
+                      id: todo.id!,
+                    ),
+                  ),
+                );
+              },
               child: const Icon(
                 Icons.edit,
                 color: AppConst.kLight,

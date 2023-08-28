@@ -11,6 +11,17 @@ import '../../../../common/widgets/loading_state_notifier.dart';
 
 part 'todo_provider.g.dart';
 
+final shouldReloadProvider = StateNotifierProvider<ShouldReloadNotifier, bool>(
+    (ref) => ShouldReloadNotifier());
+
+class ShouldReloadNotifier extends StateNotifier<bool> {
+  ShouldReloadNotifier() : super(false);
+
+  void toggleReload() {
+    state = !state;
+  }
+}
+
 @riverpod
 class TodoState extends _$TodoState {
   @override
@@ -23,8 +34,8 @@ class TodoState extends _$TodoState {
     state = data.map((e) => Task.fromJson(e)).toList();
   }
 
-  void addTask(Task task) async {
-    final result = await DBHelper.createItem(task);
+  void addTask(Task task, BuildContext context) async {
+    final result = await DBHelper.createItem(task, context);
     if (result != 0) {
       refresh();
     }
@@ -37,9 +48,36 @@ class TodoState extends _$TodoState {
     return LoadingStateNotifier();
   });
 
+  // Future<Color> getRandomColors() async {
+  //   Random random = Random();
+  //   int randomNumber = random.nextInt(colors.length);
+  //   return colors[randomNumber];
+  // }
+
   Future<Color> getRandomColors() async {
+    if (colors.isEmpty) {
+      throw Exception('No colors available');
+    }
+
     Random random = Random();
-    int randomNumber = random.nextInt(colors.length);
+    int randomNumber;
+
+    // Keep track of used color indices
+    Set<int> usedIndices = <int>{};
+
+    // Check if all colors have been used
+    if (usedIndices.length == colors.length) {
+      throw Exception('All colors have been used');
+    }
+
+    // Generate a random color that hasn't been used before
+    do {
+      randomNumber = random.nextInt(colors.length);
+    } while (usedIndices.contains(randomNumber));
+
+    // Add the used index to the set
+    usedIndices.add(randomNumber);
+
     return colors[randomNumber];
   }
 
@@ -48,13 +86,14 @@ class TodoState extends _$TodoState {
       String title,
       String description,
       int isCompleted,
+      int isPending,
       String date,
       String startTime,
       String endTime,
       int remind,
       String repeat) async {
-    await DBHelper.updateTask(id, title, description, isCompleted, date,
-        startTime, endTime, remind, repeat);
+    await DBHelper.updateTask(
+        id, title, description, 0, 0, date, startTime, endTime, remind, repeat);
     refresh();
   }
 
@@ -70,13 +109,30 @@ class TodoState extends _$TodoState {
       String title,
       String description,
       int isCompleted,
+      int isPending,
       String date,
       String startTime,
       String endTime,
       int remind,
       String repeat) async {
     await DBHelper.updateTask(
-        id, title, description, 1, date, startTime, endTime, remind, repeat);
+        id, title, description, 1, 0, date, startTime, endTime, remind, repeat);
+    refresh();
+  }
+
+  void markAsPending(
+      int id,
+      String title,
+      String description,
+      int isCompleted,
+      int isPending,
+      String date,
+      String startTime,
+      String endTime,
+      int remind,
+      String repeat) async {
+    await DBHelper.updateTask(
+        id, title, description, 0, 1, date, startTime, endTime, remind, repeat);
     refresh();
   }
 
@@ -121,5 +177,15 @@ class TodoState extends _$TodoState {
       isCompleted = true;
     }
     return isCompleted;
+  }
+
+  bool getPendingStatus(Task task) {
+    bool? isPending;
+    if (task.isPending == 0) {
+      isPending = false;
+    } else {
+      isPending = true;
+    }
+    return isPending;
   }
 }

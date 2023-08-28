@@ -9,7 +9,7 @@ class DBHelper {
 
   static Future<void> createTables(sql.Database database) async {
     await database.execute(
-      'CREATE TABLE todo(id INTEGER PRIMARY KEY AUTOINCREMENT, title STRING, description TEXT, isCompleted INTEGER, date STRING, startTime STRING, endTime STRING, remind INTEGER, repeat STRING)',
+      'CREATE TABLE todo(id INTEGER PRIMARY KEY AUTOINCREMENT, title STRING, description TEXT, isCompleted INTEGER, isPending, date STRING, startTime STRING, endTime STRING, remind INTEGER, repeat STRING)',
     );
 
     await database.execute(
@@ -27,7 +27,7 @@ class DBHelper {
     );
   }
 
-  static Future<int> createItem(Task task) async {
+  static Future<int> createItem(Task task, BuildContext context) async {
     try {
       final db = DBHelper.db();
       final result = await db.then((value) async {
@@ -38,12 +38,17 @@ class DBHelper {
         );
         return result;
       });
-      print('---->> $result');
-      print(result.toString());
       return result;
     } catch (e) {
       print('----');
       if (kDebugMode) {
+        if (context.mounted) {
+          CustomCupertinoAlertDialog.show(
+            context,
+            'Error',
+            e.toString(),
+          );
+        }
         print(e);
       }
       return 0;
@@ -79,6 +84,7 @@ class DBHelper {
     String title,
     String description,
     int isCompleted,
+    int isPending,
     String date,
     String startTime,
     String endTime,
@@ -91,6 +97,7 @@ class DBHelper {
       'title': title,
       'description': description,
       'isCompleted': isCompleted,
+      'isPending': isPending,
       'date': date,
       'startTime': startTime,
       'endTime': endTime,
@@ -111,12 +118,15 @@ class DBHelper {
   }
 
   static Future<int> deleteItem(int id) async {
-    final db = DBHelper._db;
-    final result = await db!.delete(
-      'todo',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final db = DBHelper.db();
+    final result = await db.then((value) async {
+      final result = await value.delete(
+        'todo',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      return result;
+    });
     return result;
   }
 

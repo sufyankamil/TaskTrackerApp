@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:management/features/todo/controller/todo/todo_provider.dart';
+import 'package:management/features/todo/pages/update_task.dart';
 
 import '../../../common/utils/constants.dart';
 import '../../../common/widgets/expasion_tile.dart';
@@ -82,6 +83,7 @@ class TomorrowList extends ConsumerWidget {
                       todo.title!,
                       todo.description!,
                       1,
+                      0,
                       todo.date!,
                       todo.startTime!,
                       todo.endTime!,
@@ -94,7 +96,22 @@ class TomorrowList extends ConsumerWidget {
               ref.read(todoStateProvider.notifier).deleteTask(todo.id!);
             },
             editWidget: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                
+                titles = todo.title.toString();
+                descriptions = todo.description.toString();
+                startTimes = todo.startTime!;
+                endTimes = todo.endTime!;
+                dates = todo.date!;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdateTask(
+                      id: todo.id!,
+                    ),
+                  ),
+                );
+              },
               child: const Icon(
                 Icons.edit,
                 color: AppConst.kLight,
