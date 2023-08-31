@@ -34,6 +34,16 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  final List<TextInputFormatter> _inputFormatters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.keyboardType == TextInputType.number) {
+      _inputFormatters.add(FilteringTextInputFormatter.allow(RegExp(r'[0-9]')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -50,10 +60,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         style: appStyle(18, AppConst.kBkDark, FontWeight.w700),
         controller: widget.textEditingController,
         keyboardType: widget.keyboardType,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(
-              RegExp(r'[0-9]')), // Only allow numeric input
-        ],
+        inputFormatters: _inputFormatters,
         decoration: InputDecoration(
           hintText: widget.hintText,
           suffixIcon: widget.suffixIcon,

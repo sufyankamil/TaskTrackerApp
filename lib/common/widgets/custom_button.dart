@@ -15,6 +15,8 @@ class CustomButton extends StatelessWidget {
 
   final String text;
 
+  final bool isEnabled; 
+
   const CustomButton({
     super.key,
     this.onTap,
@@ -23,12 +25,13 @@ class CustomButton extends StatelessWidget {
     this.color2,
     required this.color,
     required this.text,
+    this.isEnabled = true, // Default to enabled
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null, // Disable onTap if isEnabled is false
       child: Container(
         height: height,
         width: width,
