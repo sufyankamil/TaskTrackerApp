@@ -114,7 +114,8 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                             ),
                             const WidthSpacer(width: 10),
                             ReusableText(
-                              text: 'From : start To : end',
+                              text:
+                                  'From : ${widget.payload!.split('|')[2]} - ${widget.payload!.split('|')[3]}',
                               style: appStyle(
                                   13, AppConst.kBkDark, FontWeight.w600),
                             ),
@@ -123,12 +124,12 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                       ),
                       const HeightSpacer(height: 15),
                       ReusableText(
-                        text: 'Title',
+                        text: 'Title : ${widget.payload!.split('|')[0]}',
                         style: appStyle(14, AppConst.kBkDark, FontWeight.bold),
                       ),
                       const HeightSpacer(height: 15),
                       Text(
-                        'Description',
+                        'Description : ${widget.payload!.split('|')[1]}',
                         maxLines: 8,
                         textAlign: TextAlign.justify,
                         style:
@@ -163,7 +164,6 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                 'assets/images/read_n.json',
                 width: AppConst.kWidth * 0.8,
                 height: AppConst.kHeight * 0.6,
-                
               ),
             ),
           ],
