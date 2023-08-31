@@ -64,8 +64,6 @@ class TodoTile extends StatelessWidget {
                         borderRadius: BorderRadius.all(
                           Radius.circular(AppConst.kRadius),
                         ),
-
-                        /// TODO: Add color scheme
                         color: color ?? AppConst.kRed,
                       ),
                     ),

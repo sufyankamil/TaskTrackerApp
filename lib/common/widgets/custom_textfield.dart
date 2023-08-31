@@ -34,7 +34,7 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  List<TextInputFormatter> _inputFormatters = [];
+  final List<TextInputFormatter> _inputFormatters = [];
 
   @override
   void initState() {

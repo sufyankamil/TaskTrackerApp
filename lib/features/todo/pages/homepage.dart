@@ -90,11 +90,6 @@ class _HomePageState extends ConsumerState<HomePage>
 
     String today = ref.read(todoStateProvider.notifier).getToday();
 
-    var todayList = todayListData
-        .where((element) =>
-            element.isCompleted == 0 && element.date!.contains(today))
-        .toList();
-
     List<Task> filteredTasks = [];
 
 // Function to filter tasks by task name

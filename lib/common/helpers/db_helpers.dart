@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:management/common/widgets/custom_alert.dart';
@@ -40,17 +39,14 @@ class DBHelper {
       });
       return result;
     } catch (e) {
-      print('----');
-      if (kDebugMode) {
-        if (context.mounted) {
-          CustomCupertinoAlertDialog.show(
-            context,
-            'Error',
-            e.toString(),
-          );
-        }
-        print(e);
+      if (context.mounted) {
+        CustomCupertinoAlertDialog.show(
+          context,
+          'Error',
+          e.toString(),
+        );
       }
+
       return 0;
     }
   }

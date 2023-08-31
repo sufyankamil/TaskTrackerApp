@@ -67,7 +67,6 @@ class AuthRepository {
       }
       Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false);
     } on FirebaseAuth catch (e) {
-      print(e.toString());
       if (Platform.isIOS) {
         CustomCupertinoAlertDialog.show(
           context,
@@ -130,14 +129,10 @@ class AuthRepository {
           }
         },
         verificationFailed: (FirebaseAuthException e) {
-          print(e.toString());
           if (e.code == 'invalid-phone-number') {
             if (Platform.isIOS) {
               CustomCupertinoAlertDialog.show(
-                context,
-                'Error',
-                e.toString(),
-              );
+                  context, 'Error', 'Please enter a valid phone number');
             } else {
               CustomCupertinoAlertDialog.showAlertDialog(
                 context: context,
@@ -148,11 +143,8 @@ class AuthRepository {
             }
           } else if (e.code == 'too-many-requests') {
             if (Platform.isIOS) {
-              CustomCupertinoAlertDialog.show(
-                context,
-                'Error',
-                e.toString(),
-              );
+              CustomCupertinoAlertDialog.show(context, 'Error',
+                  'Too many requests, please try again later');
             } else {
               CustomCupertinoAlertDialog.showAlertDialog(
                 context: context,
@@ -177,21 +169,6 @@ class AuthRepository {
               );
             }
           }
-
-          // if (Platform.isIOS) {
-          //   CustomCupertinoAlertDialog.show(
-          //     context,
-          //     'Error',
-          //     e.toString(),
-          //   );
-          // } else {
-          //   CustomCupertinoAlertDialog.showAlertDialog(
-          //     context: context,
-          //     title: 'Error',
-          //     content: e.toString(),
-          //     buttonText: 'OK',
-          //   );
-          // }
         },
         codeSent: (String verificationId, int? resendToken) {
           DBHelper.createUser(1);
@@ -213,10 +190,7 @@ class AuthRepository {
           if (Platform.isIOS) {
             if (context.mounted) {
               CustomCupertinoAlertDialog.show(
-                context,
-                'Error',
-                e.toString(),
-              );
+                  context, 'Error', 'Please enter a valid phone number');
             }
           } else {
             if (context.mounted) {
@@ -235,7 +209,7 @@ class AuthRepository {
               CustomCupertinoAlertDialog.show(
                 context,
                 'Error',
-                e.toString(),
+                'Too many requests, please try again later',
               );
             }
           } else {
@@ -268,25 +242,6 @@ class AuthRepository {
             }
           }
       }
-
-      // if (Platform.isIOS) {
-      //   if (context.mounted) {
-      //     CustomCupertinoAlertDialog.show(
-      //       context,
-      //       'Error',
-      //       e.toString(),
-      //     );
-      //   }
-      // } else {
-      //   if (context.mounted) {
-      //     CustomCupertinoAlertDialog.showAlertDialog(
-      //       context: context,
-      //       title: 'Error',
-      //       content: e.toString(),
-      //       buttonText: 'OK',
-      //     );
-      //   }
-      // }
     } on SocketException catch (e) {
       if (Platform.isIOS) {
         if (context.mounted) {

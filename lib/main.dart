@@ -9,7 +9,6 @@ import 'package:management/common/utils/constants.dart';
 import 'package:management/features/auth/controller/user_controller.dart';
 import 'package:management/features/onboarding/pages/onboarding.dart';
 import 'package:management/features/todo/pages/homepage.dart';
-import 'package:management/features/todo/pages/view_notif.dart';
 import 'package:management/firebase_options.dart';
 
 void main() async {

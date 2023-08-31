@@ -41,8 +41,6 @@ class PendingTask extends ConsumerWidget {
           bool isPending =
               ref.watch(todoStateProvider.notifier).getPendingStatus(task);
 
-          print(isPending);
-
           return FutureBuilder<Color>(
             future: ref.read(todoStateProvider.notifier).getRandomColors(),
             builder: (context, snapshot) {

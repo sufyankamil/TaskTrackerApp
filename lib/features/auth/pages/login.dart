@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,7 +12,6 @@ import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_button.dart';
 import 'package:management/common/widgets/height_spacer.dart';
 import 'package:management/common/widgets/reusable_text.dart';
-import 'package:management/features/auth/pages/otp_pages.dart';
 
 import '../../../common/widgets/custom_alert.dart';
 import '../../../common/widgets/custom_textfield.dart';
@@ -74,14 +74,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         );
       }
     } else {
-      print('${country.phoneCode}${_controller.text.trim()}');
+      if (kDebugMode) {
+        print('${country.phoneCode}${_controller.text.trim()}');
+      }
       final authController = ref.read(authControllerProvider);
       authController.sendOTP(
         phone: '+${country.phoneCode}${_controller.text.trim()}',
         context: context,
       );
     }
-    // if (_controller.text.trim().length >= 9) {}
   }
 
   @override
