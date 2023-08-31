@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:management/common/helpers/notifications_helper.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:management/common/widgets/app_style.dart';
 import 'package:management/common/widgets/custom_textfield.dart';
@@ -32,6 +33,10 @@ class _HomePageState extends ConsumerState<HomePage>
 
   late final TabController tab = TabController(length: 3, vsync: this);
 
+  late NotificationsHelper notificationsHelper;
+
+  late NotificationsHelper controller;
+
   String _getFormattedDate() {
     final now = DateTime.now();
     final dayOfWeek = DateFormat('EEEE').format(now);
@@ -45,7 +50,13 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   void initState() {
-    super.initState();
+    notificationsHelper = NotificationsHelper(ref: ref);
+    Future.delayed(const Duration(seconds: 0), () {
+      controller = NotificationsHelper(ref: ref);
+    });
+
+    notificationsHelper.initNotifications();
+    notificationsHelper.requestIOSPermissions();
 
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
@@ -67,6 +78,8 @@ class _HomePageState extends ConsumerState<HomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(todoStateProvider.notifier).refresh();
     });
+
+    super.initState();
   }
 
   @override
@@ -83,7 +96,6 @@ class _HomePageState extends ConsumerState<HomePage>
         .toList();
 
     List<Task> filteredTasks = [];
-
 
 // Function to filter tasks by task name
     void searchTasks(String query) {

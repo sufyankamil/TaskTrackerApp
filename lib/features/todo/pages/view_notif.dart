@@ -163,7 +163,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                 'assets/images/read_n.json',
                 width: AppConst.kWidth * 0.8,
                 height: AppConst.kHeight * 0.6,
-                // fit: BoxFit.fitHeight,
+                
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:management/common/models/task_model.dart';
 import 'package:management/common/utils/constants.dart';
@@ -12,6 +13,9 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
 import 'package:management/features/todo/controller/dates/dates_provider.dart';
 import 'package:management/features/todo/controller/todo/todo_provider.dart';
+import 'package:management/features/todo/pages/homepage.dart';
+
+import '../../../common/helpers/notifications_helper.dart';
 
 class AddTask extends ConsumerStatefulWidget {
   const AddTask({super.key});
@@ -24,6 +28,24 @@ class _AddTaskState extends ConsumerState<AddTask> {
   final TextEditingController titleController = TextEditingController();
 
   final TextEditingController descriptionController = TextEditingController();
+
+  late NotificationsHelper notificationsHelper;
+
+  late NotificationsHelper controller;
+
+  List<int> notifications = [];
+
+  @override
+  void initState() {
+    notificationsHelper = NotificationsHelper(ref: ref);
+    Future.delayed(const Duration(seconds: 0), () {
+      controller = NotificationsHelper(ref: ref);
+    });
+
+    notificationsHelper.initNotifications();
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -40,7 +62,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
 
     var endTime = ref.watch(endTimeStateProvider);
 
-    submit(BuildContext context) {
+    submit() {
       if (titleController.text.isNotEmpty &&
           descriptionController.text.isNotEmpty &&
           scheduleDate.isNotEmpty &&
@@ -56,23 +78,74 @@ class _AddTaskState extends ConsumerState<AddTask> {
           remind: 0,
           repeat: 'yes',
         );
+        notificationsHelper.scheduleNotification(
+          notifications[0],
+          notifications[1],
+          notifications[2],
+          notifications[3],
+          task,
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
         ref.read(todoStateProvider.notifier).addTask(task, context);
-        ref.read(dateStateProvider.notifier).setDate('');
-        ref.read(startTimeStateProvider.notifier).setStart('');
-        ref.read(endTimeStateProvider.notifier).setEnd('');
-        titleController.clear();
-        descriptionController.clear();
-
-        Navigator.pop(context);
-      } else {
+      } else if (titleController.text.isEmpty &&
+          descriptionController.text.isEmpty &&
+          scheduleDate.isEmpty &&
+          startTime.isEmpty &&
+          endTime.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Please fill all the fields',
-              style: TextStyle(color: Colors.white),
-            ),
             backgroundColor: AppConst.kRed,
+            content: Text('Please fill all the fields'),
           ),
+        );
+      } else if (titleController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppConst.kRed,
+            content: Text('Please fill the title'),
+          ),
+        );
+      } else if (descriptionController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppConst.kRed,
+            content: Text('Please fill the description'),
+          ),
+        );
+      } else if (scheduleDate.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppConst.kRed,
+            content: Text('Please fill the schedule date'),
+          ),
+        );
+      } else if (startTime.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppConst.kRed,
+            content: Text('Please fill the start time'),
+          ),
+        );
+      } else if (endTime.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppConst.kRed,
+            content: Text('Please fill the end time'),
+          ),
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Unable to add task',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: AppConst.kRed,
+          textColor: AppConst.kLight,
+          fontSize: 16.sp,
         );
       }
     }
@@ -184,12 +257,12 @@ class _AddTaskState extends ConsumerState<AddTask> {
                             showTitleActions: true,
                             minTime: DateTime(2023, 8, 1),
                             maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
+                          notifications = ref
+                              .read(startTimeStateProvider.notifier)
+                              .dates(date);
                           ref
                               .read(startTimeStateProvider.notifier)
                               .setStart(date.toString());
-                          if (kDebugMode) {
-                            print('confirm $date');
-                          }
                         }, locale: picker.LocaleType.en);
                       },
                       width: AppConst.kWidth * 0.5,
@@ -235,7 +308,7 @@ class _AddTaskState extends ConsumerState<AddTask> {
               const HeightSpacer(height: 20),
               CustomButton(
                 onTap: () {
-                  submit(context);
+                  submit();
                 },
                 width: AppConst.kWidth,
                 height: 52.h,
